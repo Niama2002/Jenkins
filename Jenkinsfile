@@ -11,27 +11,27 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'On construit l\'application avec Maven...'
-                sh 'mvn clean package'
+                bat 'mvn clean package'
             }
         }
         stage('Unit Tests') {
             steps {
                 echo 'On exécute les tests unitaires...'
-                sh 'mvn test'
+                bat 'mvn test'
             }
         }
         stage('Build Docker Image') {
             steps {
                 echo 'On construit l\'image Docker...'
-                sh "docker build -t %DOCKER_IMAGE% ."
+                bat "docker build -t %DOCKER_IMAGE% ."
             }
         }
         stage('Push Docker Image to DockerHub') {
             steps {
                 echo 'Connexion à DockerHub...'
-                sh "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
+                bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
                 echo 'On pousse l\'image Docker vers DockerHub...'
-                sh "docker push %DOCKER_IMAGE%"
+                bat "docker push %DOCKER_IMAGE%"
             }
         }
     }
