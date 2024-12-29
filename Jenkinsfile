@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'niama123/jenkins:latest' 
+        DOCKER_IMAGE = 'niama123/jenkins:latest'
         DOCKER_USERNAME = 'niama123'
         DOCKER_PASSWORD = '*P!zpUA7yR+YL5y'
     }
@@ -11,27 +11,27 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'On construit l\'application avec Maven...'
-                sh './mvnw clean package -DskipTests'
+                sh 'mvn clean package'
             }
         }
         stage('Unit Tests') {
             steps {
                 echo 'On exécute les tests unitaires...'
-                sh './mvnw test'
+                sh 'mvn test'
             }
         }
         stage('Build Docker Image') {
             steps {
                 echo 'On construit l\'image Docker...'
-                sh "docker build -t ${DOCKER_IMAGE} ."
+                sh "docker build -t %DOCKER_IMAGE% ."
             }
         }
         stage('Push Docker Image to DockerHub') {
             steps {
                 echo 'Connexion à DockerHub...'
-                sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin"
+                sh "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
                 echo 'On pousse l\'image Docker vers DockerHub...'
-                sh "docker push ${DOCKER_IMAGE}"
+                sh "docker push %DOCKER_IMAGE%"
             }
         }
     }
