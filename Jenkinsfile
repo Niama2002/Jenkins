@@ -1,5 +1,8 @@
 pipeline {
     agent any
+     tools {
+            maven 'Maven' 
+        }
 
     environment {
         DOCKER_IMAGE = 'niama123/jenkins:latest'
