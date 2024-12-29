@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'niama123/jenkins:latest'
+        DOCKER_IMAGE = 'niama123/jenkins:latest' 
         DOCKER_USERNAME = 'niama123'
         DOCKER_PASSWORD = '*P!zpUA7yR+YL5y'
     }
@@ -10,46 +10,38 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                script {
-                    echo 'On construit l\'application...'
-                    bat 'mvn clean package'
-                }
+                echo 'On construit l\'application avec Maven...'
+                sh './mvnw clean package -DskipTests'
             }
         }
         stage('Unit Tests') {
             steps {
-                script {
-                    echo 'On lance les tests unitaires...'
-                    bat 'mvn test'
-                }
+                echo 'On exécute les tests unitaires...'
+                sh './mvnw test'
             }
         }
         stage('Build Docker Image') {
             steps {
-                script {
-                    echo 'On crée l\'image Docker...'
-                    bat "docker build -t %DOCKER_IMAGE% ."
-                }
+                echo 'On construit l\'image Docker...'
+                sh "docker build -t ${DOCKER_IMAGE} ."
             }
         }
         stage('Push Docker Image to DockerHub') {
             steps {
-                script {
-                    echo 'Connexion à DockerHub...'
-                    bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
-                    echo 'On envoie l\'image Docker sur DockerHub...'
-                    bat "docker push %DOCKER_IMAGE%"
-                }
+                echo 'Connexion à DockerHub...'
+                sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin"
+                echo 'On pousse l\'image Docker vers DockerHub...'
+                sh "docker push ${DOCKER_IMAGE}"
             }
         }
     }
 
     post {
         success {
-            echo 'Tout s\'est bien passé ! 🎉'
+            echo 'Pipeline terminé avec succès ! '
         }
         failure {
-            echo 'Oups, il y a eu un problème. 😔'
+            echo 'Le pipeline a échoué. Vérifiez les journaux pour en savoir plus.'
         }
     }
 }
